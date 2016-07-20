@@ -55,7 +55,6 @@ AudioConnection          patchCord19(mixer3, 0, i2s1, 1);
 AudioControlSGTL5000     sgtl5000_1;     //xy=667,550
 // GUItool: end automatically generated code
 
-int sdWavCount = 12;
 AudioPlaySdWav sdWavArray[] = {
   playSdWav1,
   playSdWav2,
@@ -73,32 +72,32 @@ AudioPlaySdWav sdWavArray[] = {
 // button debounce lib
 #include <Bounce2.h>
 
-#define DEBUG false
+#define DEBUG true
 
 int maxSounds = 12;
 int errorSound = 12;
 char* soundFileName[] =
 {
-  "Forest.wav",
+  "Subway.wav", //mush 1
   "River.wav",
   "RockSl.wav",
-  "EverG.wav",
+  "EverG.wav", // mush 2
   "EarthQ.wav",
   "Lava.wav",
-  "RockMove.wav",
-  "FireR.wav",
+  "Swim.wav", // mush 3
+  "Forest.wav",
   "Birds.wav",
-  "Lava.wav",
+  "Stride.wav", // mush 4
   "ThunderS.wav",
-  "Swamp.wav",
-  "error.wav"
+  "Spells.wav",
+  "Rip.wav"
 };
 
 
 //
 // buttons
 //
-const int buttonDebounceMs = 60;
+const int buttonDebounceMs = 30;
 const int buttonCount = 3;
 int buttonPin[] = {2, 3, 4};
 Bounce button[buttonCount];
@@ -141,6 +140,10 @@ void setup() {
   NVIC_SET_PRIORITY(IRQ_UART0_STATUS, 255); // 255 = lowest priority
   NVIC_ENABLE_IRQ(IRQ_UART0_STATUS);
 
+  NVIC_SET_PRIORITY(IRQ_UART1_STATUS, 255); // 255 = lowest priority
+  NVIC_ENABLE_IRQ(IRQ_UART1_STATUS);
+
+
   setupMushroomSelection();
   setupButtons();
   setupLeds();
@@ -152,7 +155,7 @@ void setupAudio() {
   // said this is needed for simultaneous cd card access
   //AudioNoInterrupts();
 
-  AudioMemory(80);
+  AudioMemory(8);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.5);
 
@@ -176,10 +179,30 @@ void maxGain() {
   mixer2.gain(1, 0.5);
   mixer2.gain(2, 0.5);
   mixer2.gain(3, 0.5);
-  mixer3.gain(0, 1);
-  mixer3.gain(1, 1);
-  mixer3.gain(2, 0.5);
-  mixer3.gain(3, 0.5);
+  mixer3.gain(0, 0);
+  mixer3.gain(1, 0);
+  mixer3.gain(2, 0);
+  mixer3.gain(3, 3.5);
+  mixer4.gain(0, 0.5);
+  mixer4.gain(1, 0.5);
+  mixer4.gain(2, 0.5);
+  mixer4.gain(3, 0.5);
+  mixer5.gain(0, 1);
+}
+
+void effectsGain() {
+  mixer1.gain(0, 0.8);
+  mixer1.gain(1, 0.5);
+  mixer1.gain(2, 0.5);
+  mixer1.gain(3, 0.5);
+  mixer2.gain(0, 0.5);
+  mixer2.gain(1, 0.5);
+  mixer2.gain(2, 0.8);
+  mixer2.gain(3, 0.8);
+  mixer3.gain(0, 0.8);
+  mixer3.gain(1, 0.8);
+  mixer3.gain(2, 0.8);
+  mixer3.gain(3,0.5);
   mixer4.gain(0, 0.5);
   mixer4.gain(1, 0.5);
   mixer4.gain(2, 0.5);
@@ -230,6 +253,18 @@ void triggerBackingTrack() {
     Serial.println("Start playing 1");
     playSdWav13.play("BackTr2.wav");
     delay(5);
+  }
+
+  // if nothing else is playing raise backing gain
+  if (!playSdWav1.isPlaying()) {
+    if (!playSdWav2.isPlaying()) {
+      if (!playSdWav3.isPlaying()) {
+        if (!playSdWav4.isPlaying()) {
+          // raise gain
+          maxGain();
+        }
+      }
+    }
   }
 
 }
@@ -303,8 +338,19 @@ void sendAndPlay(char command) {
   Serial1.flush();
   delay(20);
   //delay(random(1000)); // randomize the clicking
-  maxGain();
+  effectsGain();
   log("sending :" + String(command));
+
+
+  //log(String(command));
+
+  // react
+
+
+  //qazdelay(1000);
+
+
+
   return;
 }
 
@@ -349,33 +395,23 @@ char* parseSoundCommand(char command) {
 
 void playfile(char * filename) {
 
+  effectsGain();
   // i did it!
   //log("-device:");
   //log(String(getMushroom()));
   log("playing: " + String(filename));
   log(" ");
-
   if (!playSdWav1.isPlaying()) {
     playSdWav1.play(filename);
-    log("playing1");
-  } else {
+  } else if (!playSdWav2.isPlaying()) {
     playSdWav2.play(filename);
-    log("playing2");
-  } 
+  } else if (!playSdWav3.isPlaying()) {
+    playSdWav3.play(filename);
+  } else {
+    playSdWav4.play(filename);
+  }
   return;
 }
-
-/*
-  if (!sdWavArray[0].isPlaying()) {
-    sdWavArray[0].play(filename);
-    log ("hello");
-  } else {
-    sdWavArray[1].play(filename);
-  }
-  return;
-
-  }
-*/
 
 char getSoundCommand(int buttonId) {
   int sound = buttonId + getMushroom() * buttonCount; //buttonCount is a constant 3
