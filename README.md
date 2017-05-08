@@ -1,10 +1,12 @@
 # SymphonicPicnic
 
-####playful experiments with interactive audio installations
+### playful experiments with interactive audio installations
 
-We've designed a wireless inteeractive audio device to syncphonize sound and play audio together at a great distance (1000s of feet)
+We aim to create soundscapes and interactive spaces.
 
-We've created soundscapes and interactive spaces with these devices for
+We design wireless interactive audio devices to syncphonize sound and allow people to play together over great distances (1000s of feet) 
+
+We have showcased at:
 
 0. Time Square Alliance and NYU Come Out And Play
 0. PS1 Moma and Code Liberation NYC
