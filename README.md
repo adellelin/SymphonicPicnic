@@ -4,7 +4,7 @@
 
 We aim to create soundscapes and interactive spaces.
 
-We design wireless interactive audio devices to syncphonize sound and allow people to play together over great distances (1000s of feet) 
+We design wireless interactive audio devices to syncphonize sound and allow people to play together over great distances (1000s of feet) with minmal latency.
 
 We have showcased at:
 
@@ -13,6 +13,7 @@ We have showcased at:
 0. V&A Museum and [Code Liberation](http://codeliberation.org/) UK
 0. Upcoming : [NYCResistor](http://www.nycresistor.com/) Interactive Showcase
 
+To further the research we also using these to create a remote voice and public interface for a set of connected garments : [video](https://vimeo.com/210477639)
 
 This github repo hosts pcb designs, source codes, and audio samples for the various installations and other experiements along the way. 
 
